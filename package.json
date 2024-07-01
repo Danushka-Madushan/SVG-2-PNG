@@ -14,7 +14,8 @@
     "@nextui-org/react": "^2.4.2",
     "framer-motion": "^11.2.12",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
