@@ -1,5 +1,6 @@
 import { Button, Image as NextuiImage, Link, Switch, Input } from '@nextui-org/react';
 import { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import SyncLink from './Icons/SyncLink';
 import UnLink from './Icons/UnLink';
 
@@ -63,6 +64,9 @@ const App = () => {
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.type !== 'image/svg+xml') {
+        return toast.error('Unsupported File Selected!')
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
         const svgData = e.target?.result as string;
@@ -173,6 +177,7 @@ const App = () => {
       {PNGDataURL && (
         <div className='flex flex-col gap-y-4 items-center my-4'>
           <Button
+            onPress={() => toast.success('Success')}
             className='text-base text-white my-2'
             href={PNGDataURL}
             as={Link}
