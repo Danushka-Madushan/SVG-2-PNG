@@ -144,6 +144,11 @@ const App = () => {
         </Button>
         <div className="flex justify-center items-center w-72 gap-x-4">
           <Input
+            classNames={{
+              input: [
+                "text-center font-medium text-gray-600",
+              ]
+            }}
             type="text"
             size='md'
             color='primary'
@@ -154,6 +159,11 @@ const App = () => {
           {SyncAspectRatio ? <SyncLink size={60} /> : <UnLink size={60} />}
           <Input
             isDisabled={SyncAspectRatio}
+            classNames={{
+              input: [
+                "text-center font-medium text-gray-600",
+              ]
+            }}
             type="text"
             size='md'
             color='primary'
