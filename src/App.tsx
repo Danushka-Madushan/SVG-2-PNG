@@ -1,19 +1,3 @@
-import {
-  Button,
-  Link,
-  Switch,
-  Input,
-  Card,
-  CardBody,
-  Divider,
-  Tooltip,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  Chip,
-  Tabs,
-  Tab
-} from "@heroui/react";
 import { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react';
 import { Image as NextuiImage } from "@heroui/react"
 import toast from 'react-hot-toast';
@@ -179,7 +163,6 @@ const App = () => {
     for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
     const blob = new Blob([ab], { type: 'image/png' });
     const blobUrl = URL.createObjectURL(blob);
-    const win = window.open(blobUrl, '_blank');
     // Revoke after a short delay so the tab has time to load it
     setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
   };
