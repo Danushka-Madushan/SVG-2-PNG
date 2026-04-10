@@ -1,5 +1,6 @@
-import { Button, Image as NextuiImage, Link, Switch, Input } from '@nextui-org/react';
+import { Button, Link, Switch, Input } from "@heroui/react";
 import { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react';
+import { Image as NextuiImage } from "@heroui/react"
 import toast from 'react-hot-toast';
 import SyncLink from './Icons/SyncLink';
 import UnLink from './Icons/UnLink';
