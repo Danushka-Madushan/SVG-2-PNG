@@ -170,6 +170,20 @@ const App = () => {
     ConvertSVG2PNG();
   }, [ConvertSVG2PNG]);
 
+  /* Open PNG in new tab via Blob URL (data: URLs are blocked by browsers) */
+  const openInNewTab = () => {
+    if (!PNGDataURL) return;
+    const byteString = atob(PNGDataURL.split(',')[1]);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+    const blob = new Blob([ab], { type: 'image/png' });
+    const blobUrl = URL.createObjectURL(blob);
+    const win = window.open(blobUrl, '_blank');
+    // Revoke after a short delay so the tab has time to load it
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+  };
+
   const handleReset = () => {
     setSVGData('');
     setPNGDataURL('');
@@ -404,7 +418,8 @@ const App = () => {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {/* Width / Link / Height row */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px', alignItems: 'end' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px', alignItems: 'end', minWidth: 0 }}>
+                      <div style={{ minWidth: 0 }}>
                       <FieldGroup label="Width">
                         <NumberInput
                           value={Width}
@@ -412,6 +427,7 @@ const App = () => {
                           suffix="px"
                         />
                       </FieldGroup>
+                      </div>
 
                       {/* Link toggle */}
                       <div style={{ paddingBottom: '2px' }}>
@@ -436,6 +452,7 @@ const App = () => {
                         </button>
                       </div>
 
+                      <div style={{ minWidth: 0 }}>
                       <FieldGroup label="Height">
                         <NumberInput
                           value={Height}
@@ -444,6 +461,7 @@ const App = () => {
                           disabled={SyncAspectRatio}
                         />
                       </FieldGroup>
+                      </div>
                     </div>
 
                     {/* Aspect ratio toggle */}
@@ -629,9 +647,13 @@ const App = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '48px 32px 32px',
+                  padding: '64px 32px 48px',
+                  backgroundImage: `
+                    radial-gradient(circle, #C4C0BA 1px, transparent 1px)
+                  `,
+                  backgroundSize: '20px 20px',
+                  backgroundColor: '#F5F4F2',
                 }}
-                className="transparency-grid"
               >
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -677,10 +699,8 @@ const App = () => {
 
               {/* Open in new tab */}
               <div style={{ position: 'absolute', bottom: '16px', right: '16px' }}>
-                <a
-                  href={PNGDataURL}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  onClick={openInNewTab}
                   title="Open in new tab"
                   style={{
                     width: '34px',
@@ -692,7 +712,7 @@ const App = () => {
                     border: '1px solid #E4E2DE',
                     borderRadius: '8px',
                     color: '#78716C',
-                    textDecoration: 'none',
+                    cursor: 'pointer',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
                     transition: 'background-color 0.15s',
                   }}
@@ -704,7 +724,7 @@ const App = () => {
                     <polyline points="15 3 21 3 21 9" />
                     <line x1="10" y1="14" x2="21" y2="3" />
                   </svg>
-                </a>
+                </button>
               </div>
             </>
           )}
