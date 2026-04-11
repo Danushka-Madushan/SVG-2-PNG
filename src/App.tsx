@@ -120,31 +120,43 @@ const App = () => {
     if (!ctx) return;
 
     const img = new Image();
-    const svgBlob = new Blob([SVGData], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
+
+    // Use a base64 data URI instead of a blob: URL.
+    // Blob URLs trigger an async fetch internally; for SVGs with linearGradient /
+    // paint-server references the browser can fire onload before those references
+    // are composited, causing drawImage() to capture a blank or partially-rendered
+    // frame. A data URI is decoded inline so all references are resolved before
+    // onload fires.
+    const svgBase64 = btoa(decodeURIComponent(encodeURIComponent(SVGData)));
+    const url = `data:image/svg+xml;base64,${svgBase64}`;
 
     img.onload = () => {
-      canvas.width = Width;
-      canvas.height = Height;
-      ctx.clearRect(0, 0, Width, Height);
-      ctx.drawImage(img, 0, 0, Width, Height);
+      // Double requestAnimationFrame: defers the canvas write until after the
+      // browser has completed its next two paint cycles, guaranteeing the SVG
+      // renderer has fully composited gradients, filters, and opacity layers.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          canvas.width = Width;
+          canvas.height = Height;
+          ctx.clearRect(0, 0, Width, Height);
+          ctx.drawImage(img, 0, 0, Width, Height);
 
-      const PNGData = canvas.toDataURL('image/png');
-      const base64String = PNGData.split(',')[1];
-      const decodedLength = (base64String.length * 3) / 4 - (base64String.endsWith('==') ? 2 : base64String.endsWith('=') ? 1 : 0);
+          const PNGData = canvas.toDataURL('image/png');
+          const base64String = PNGData.split(',')[1];
+          const decodedLength = (base64String.length * 3) / 4 - (base64String.endsWith('==') ? 2 : base64String.endsWith('=') ? 1 : 0);
 
-      if (decodedLength >= 1048576) {
-        setSize(`${(decodedLength / 1048576).toFixed(2)} MB`);
-      } else {
-        setSize(`${(decodedLength / 1024).toFixed(2)} KB`);
-      }
-      setPNGDataURL(PNGData);
-      URL.revokeObjectURL(url);
+          if (decodedLength >= 1048576) {
+            setSize(`${(decodedLength / 1048576).toFixed(2)} MB`);
+          } else {
+            setSize(`${(decodedLength / 1024).toFixed(2)} KB`);
+          }
+          setPNGDataURL(PNGData);
+        });
+      });
     };
 
     img.onerror = () => {
       toast.error('Failed to process SVG');
-      URL.revokeObjectURL(url);
     };
 
     img.src = url;
@@ -163,7 +175,8 @@ const App = () => {
     for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
     const blob = new Blob([ab], { type: 'image/png' });
     const blobUrl = URL.createObjectURL(blob);
-    // Revoke after a short delay so the tab has time to load it
+    window.open(blobUrl, '_blank');
+    /* Revoke after a short delay so the tab has time to load it */
     setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
   };
 
@@ -647,8 +660,6 @@ const App = () => {
                     transition={{ duration: 0.18, ease: 'easeOut' }}
                     style={{
                       position: 'relative',
-                      boxShadow: '0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)',
-                      backgroundColor: '#FFFFFF',
                       maxWidth: '100%',
                       width: Width > 0 ? Width : 'auto',
                     }}
