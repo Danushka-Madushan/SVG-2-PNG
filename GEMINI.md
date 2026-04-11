@@ -1,71 +1,51 @@
-# GEMINI.md
+# SVG-2-PNG
+
+A high-performance, browser-based tool for converting SVG images to PNG format. The application prioritizes privacy and efficiency by performing all conversions locally using the HTML5 Canvas API.
 
 ## Project Overview
 
-**SVG to PNG Converter** is a modern, responsive web application built with **React 19**, **TypeScript**, and **Vite 8**. It allows users to upload SVG files, resize them (with optional aspect ratio synchronization), and download the resulting image as a PNG.
+SVG-2-PNG is a specialized utility designed for developers and designers who need quick, reliable SVG-to-PNG conversions without uploading sensitive assets to third-party servers. It provides a polished, interactive interface for adjusting output dimensions while maintaining or modifying aspect ratios.
 
 ### Core Technologies
-- **Frontend Framework:** [React 19](https://react.dev/)
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **UI Components:** [HeroUI v2](https://heroui.com/) (formerly NextUI)
-- **Animations:** [Framer Motion](https://www.framer.com/motion/)
-- **Build Tool:** [Vite 8](https://vite.dev/)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Utility Libraries:** `react-hot-toast` for notifications.
+- **Framework:** React 19 (TypeScript)
+- **UI Framework:** [HeroUI v3 (Beta)](https://v3.heroui.com/)
+- **Build Tool:** Vite 8
+- **Styling:** Tailwind CSS 4 & Framer Motion for smooth transitions.
+- **Processing:** Client-side HTML5 Canvas for image generation.
 
-### Architecture
-The project follows a standard Vite-based React application structure:
-- **`src/main.tsx`**: The entry point, which wraps the application with the `HeroUIProvider` and `Toaster`.
-- **`src/App.tsx`**: The main application logic, including file handling, SVG parsing, canvas rendering, and the primary UI.
-- **`src/Icons/`**: Contains custom SVG icon components (`SyncLink`, `UnLink`).
-- **`src/index.css`**: Global styles and Tailwind CSS directives.
-- **`public/`**: Static assets like the favicon.
+## Key Features
 
-## Building and Running
+- **Local Conversion:** All processing happens in the browser via `FileReader` and `canvas.toDataURL`.
+- **Intelligent Resizing:** Automatically detects original SVG dimensions and supports aspect-ratio locking/unlocking.
+- **Live Preview:** Instant visual feedback of the conversion result with dimension indicators.
+- **Size Estimation:** Real-time calculation of the resulting PNG file size.
+- **Clean Aesthetic:** Custom design tokens and minimalist UI primitives for a professional feel.
 
-### Development
-Start the development server with hot-module replacement (HMR):
-```bash
-npm run dev
-```
+## Getting Started
 
-### Build
-Create a production-ready build in the `dist/` directory:
-```bash
-npm run build
-```
+### Prerequisites
+- Node.js (v18 or higher recommended)
+- npm or yarn
 
-### GitHub Build
-Build specifically for GitHub Pages using the `vite.config.github.js` configuration:
-```bash
-npm run gh-build
-```
+### Commands
+- **Development:** `npm run dev` (Starts Vite dev server at `localhost:5173`)
+- **Build:** `npm run build` (Standard production build)
+- **GitHub Pages Build:** `npm run gh-build` (Configured for deployment to GitHub Pages)
+- **Linting:** `npm run lint` (ESLint with TypeScript support)
 
-### Linting
-Check for code quality and style issues:
-```bash
-npm run lint
-```
+## Architecture & Structure
 
-### Preview
-Locally preview the production build:
-```bash
-npm run preview
-```
+- `src/App.tsx`: The primary application component. It encapsulates:
+    - State management for dimensions and image data.
+    - SVG parsing and canvas rendering logic.
+    - Custom UI primitives (NumberInput, ToggleSwitch, etc.).
+- `src/Icons/`: Reusable SVG icon components (e.g., `SyncLink`, `UnLink`).
+- `src/providers/`: Configuration files for external providers like HeroUI.
+- `src/main.tsx`: Application entry point; handles provider wrapping (`HeroUIProvider`, `Toaster`).
 
 ## Development Conventions
 
-### Coding Style
-- **Functional Components:** All components are written as functional components using React Hooks (`useState`, `useEffect`, `useRef`, `useCallback`).
-- **TypeScript:** Use TypeScript for all source files to ensure type safety.
-- **State Management:** Local state is managed using React's `useState`. For complex logic, `useCallback` and `useEffect` are used to manage side effects and optimize performance.
-- **Styling:** Use Tailwind CSS utility classes directly in the components. Custom HeroUI styles are applied via the `classNames` prop when necessary.
-
-### Key Logic
-- **SVG Parsing:** Uses `DOMParser` to extract dimensions (`width`, `height`, `viewBox`) from uploaded SVG strings.
-- **Conversion:** Utilizes an HTML5 `<canvas>` element to render SVG data and export it as a PNG data URL (`canvas.toDataURL('image/png')`).
-- **Aspect Ratio:** Logic for maintaining aspect ratio is centralized in the `ResizeResolution` function and managed by the `SyncAspectRatio` state.
-
-### UI/UX
-- **HeroUI:** Standardized UI components (Button, Input, Switch, Link) are sourced from `@heroui/react`.
-- **Toasts:** Use `react-hot-toast` for providing feedback on file uploads and conversion status.
+- **Component Pattern:** Logic and UI are currently centralized in `App.tsx` for small-scale efficiency. For larger features, extract sub-components to `src/components/`.
+- **Styling:** Uses a mix of Tailwind CSS 4 utility classes and carefully crafted inline styles for precise design token application (Palette: Background `#F5F4F2`, Accent `#1D4ED8`).
+- **Security:** Ensure all file processing remains local. Never introduce network-based conversion services.
+- **Types:** Strict TypeScript usage is required for all new logic and components.

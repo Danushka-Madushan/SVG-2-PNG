@@ -179,7 +179,7 @@ const App = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col" style={{ backgroundColor: '#F5F4F2', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="min-h-full h-screen flex flex-col" style={{ backgroundColor: '#F5F4F2', fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* ── Navbar ── */}
       <nav
