@@ -6,17 +6,17 @@ import UnLink from './Icons/UnLink';
 import { motion, AnimatePresence } from "framer-motion";
 
 /* ─── Design Tokens ─────────────────────────────────────────────────────────
-   Palette:
-     Background   #F5F4F2  (warm off-white, stone-100 territory)
-     Surface      #FFFFFF
-     Border       #E4E2DE  (warm stone-200)
-     Text primary #1C1917  (stone-900)
-     Text muted   #78716C  (stone-500)
-     Text faint   #A8A29E  (stone-400)
-     Accent       #1D4ED8  (blue-700 — measured, corporate)
-     Accent soft  #EFF6FF  (blue-50)
-     Success      #15803D  (green-700)
-     Danger       #B91C1C  (red-700)
+  Palette:
+  Background   #F5F4F2  (warm off-white, stone-100 territory)
+  Surface      #FFFFFF
+  Border       #E4E2DE  (warm stone-200)
+  Text primary #1C1917  (stone-900)
+  Text muted   #78716C  (stone-500)
+  Text faint   #A8A29E  (stone-400)
+  Accent       #1D4ED8  (blue-700 — measured, corporate)
+  Accent soft  #EFF6FF  (blue-50)
+  Success      #15803D  (green-700)
+  Danger       #B91C1C  (red-700)
 ────────────────────────────────────────────────────────────────────────────── */
 
 const App = () => {
@@ -121,19 +121,19 @@ const App = () => {
 
     const img = new Image();
 
-    // Use a base64 data URI instead of a blob: URL.
-    // Blob URLs trigger an async fetch internally; for SVGs with linearGradient /
-    // paint-server references the browser can fire onload before those references
-    // are composited, causing drawImage() to capture a blank or partially-rendered
-    // frame. A data URI is decoded inline so all references are resolved before
-    // onload fires.
+    /* Use a base64 data URI instead of a blob: URL.
+    Blob URLs trigger an async fetch internally; for SVGs with linearGradient /
+    paint-server references the browser can fire onload before those references
+    are composited, causing drawImage() to capture a blank or partially-rendered
+    frame. A data URI is decoded inline so all references are resolved before
+    onload fires. */
     const svgBase64 = btoa(decodeURIComponent(encodeURIComponent(SVGData)));
     const url = `data:image/svg+xml;base64,${svgBase64}`;
 
     img.onload = () => {
-      // Double requestAnimationFrame: defers the canvas write until after the
-      // browser has completed its next two paint cycles, guaranteeing the SVG
-      // renderer has fully composited gradients, filters, and opacity layers.
+      /* Double requestAnimationFrame: defers the canvas write until after the
+      browser has completed its next two paint cycles, guaranteeing the SVG
+      renderer has fully composited gradients, filters, and opacity layers. */
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           canvas.width = Width;
