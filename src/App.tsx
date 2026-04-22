@@ -113,29 +113,39 @@ const App = () => {
   };
 
   /* Convert SVG to PNG */
+  const conversionIdRef = useRef(0);
   const ConvertSVG2PNG = useCallback(() => {
     const canvas = CanvasRef.current;
     if (!canvas || !SVGData || Width === 0 || Height === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const currentId = ++conversionIdRef.current;
     const img = new Image();
 
-    /* Use a base64 data URI instead of a blob: URL.
-    Blob URLs trigger an async fetch internally; for SVGs with linearGradient /
-    paint-server references the browser can fire onload before those references
-    are composited, causing drawImage() to capture a blank or partially-rendered
-    frame. A data URI is decoded inline so all references are resolved before
-    onload fires. */
-    const svgBase64 = btoa(decodeURIComponent(encodeURIComponent(SVGData)));
+    /* Pre-process SVG to set explicit dimensions */
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(SVGData, 'image/svg+xml');
+    const svgElement = svgDoc.documentElement;
+    svgElement.setAttribute('width', Width.toString());
+    svgElement.setAttribute('height', Height.toString());
+    const resizedSVGData = new XMLSerializer().serializeToString(svgDoc);
+
+    const svgBase64 = btoa(decodeURIComponent(encodeURIComponent(resizedSVGData)));
     const url = `data:image/svg+xml;base64,${svgBase64}`;
 
     img.onload = () => {
+      /* Only proceed if this is the most recent conversion request */
+      if (currentId !== conversionIdRef.current) return;
+
       /* Double requestAnimationFrame: defers the canvas write until after the
       browser has completed its next two paint cycles, guaranteeing the SVG
       renderer has fully composited gradients, filters, and opacity layers. */
       requestAnimationFrame(() => {
+        if (currentId !== conversionIdRef.current) return;
         requestAnimationFrame(() => {
+          if (currentId !== conversionIdRef.current) return;
+
           canvas.width = Width;
           canvas.height = Height;
           ctx.clearRect(0, 0, Width, Height);
@@ -156,7 +166,9 @@ const App = () => {
     };
 
     img.onerror = () => {
-      toast.error('Failed to process SVG');
+      if (currentId === conversionIdRef.current) {
+        toast.error('Failed to process SVG');
+      }
     };
 
     img.src = url;
@@ -632,7 +644,6 @@ const App = () => {
                 }}
               >
                 <TabPill active>Live Preview</TabPill>
-                <TabPill active={false} disabled>Inspect Result</TabPill>
               </div>
 
               {/* Image Canvas */}
@@ -651,13 +662,12 @@ const App = () => {
                   backgroundColor: '#F5F4F2',
                 }}
               >
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                   <motion.div
-                    key={PNGDataURL}
+                    key={FileName}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                     style={{
                       position: 'relative',
                       maxWidth: '100%',
