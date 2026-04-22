@@ -666,12 +666,19 @@ const App = () => {
                   <motion.div
                     key={FileName}
                     initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1,
+                      width: Width > 0 ? Width : 'auto'
+                    }}
+                    transition={{ 
+                      opacity: { duration: 0.2 },
+                      layout: { duration: 0.15, ease: "easeOut" },
+                      width: { duration: 0.15, ease: "easeOut" }
+                    }}
                     style={{
                       position: 'relative',
                       maxWidth: '100%',
-                      width: Width > 0 ? Width : 'auto',
                     }}
                   >
                     <NextuiImage
